@@ -1,3 +1,12 @@
+#include<stdio.h>
+#include<assert.h>
+#include<string.h>
+# include <unistd.h>
+# include <stdbool.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdlib.h>
 #include "get_next_line.h"
 
 char	*get_next_line_core(int fd, size_t buffer_size)
@@ -13,9 +22,9 @@ char	*get_next_line_core(int fd, size_t buffer_size)
 	{
 		if (buffer == NULL)
 		{
-			buffer = (char *)malloc(buffer_size + 1);
-            if (!buffer)//
-                return (NULL);//
+			buffer = (char *)malloc((size_t)buffer_size + 1);//size_tのキャストを勝手に追加
+            if (!buffer)//勝手に追加
+                return (NULL);//勝手に追加
 			rc = read(fd, buffer, buffer_size);
 			if (rc < 0)
 				return (NULL);
@@ -42,3 +51,4 @@ char	*get_next_line(int fd)
 	//free(ans);//
     return (get_next_line_core(fd, BUFFER_SIZE));
 }
+
