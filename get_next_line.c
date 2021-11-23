@@ -28,13 +28,22 @@ char	*get_next_line_core(int fd, size_t buffer_size)
 		{
 			next_n_index = 0;//変更点
 			buffer = (char *)malloc((size_t)buffer_size + 1);
+			//buffer = NULL;//
 			if (buffer == NULL)
+			{
+				free(buffer);
+				buffer = NULL;
+				free(ans);
+				ans = NULL;
 				return (NULL);
+			}
 			rc = read(fd, buffer, buffer_size);
 			if (rc < 0)
 			{
 				free(buffer);
 				buffer = NULL;
+				free(ans);
+				ans = NULL;
 				return (NULL);
 			}
 			if (rc == 0)
@@ -48,9 +57,8 @@ char	*get_next_line_core(int fd, size_t buffer_size)
 		}
 		if (ans == NULL)
 		{
-			//
-			ans = (char *)malloc(1);
-			ans[0] = '\0';
+			ans = ft_strdup("");
+			//ans = NULL;
 			if (ans == NULL)
 			{
 				free(buffer);
@@ -61,6 +69,7 @@ char	*get_next_line_core(int fd, size_t buffer_size)
 		}
 		
 		tmp = ft_strjoin(ans, &buffer[next_n_index]);
+		//tmp = NULL;
 		if (tmp == NULL)
 		{
 			free(buffer);
