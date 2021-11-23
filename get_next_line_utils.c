@@ -54,3 +54,39 @@ char *ft_strjoin(char *s1, char *s2)
     result[i + j] = '\0';
     return (result);
 }
+
+size_t ft_strlcpy(char *dst, char *src, size_t dstsize)
+{
+    size_t i;
+
+    i = 0;
+    if (dstsize == 0)
+    {
+        while (src[i])
+            i ++;
+        return (i);
+    }
+    while (i < dstsize - 1 && src[i])
+    {
+        dst[i] = src[i];
+        i ++;
+    }
+        dst[i] = '\0';
+    while (src[i])
+        i ++;
+    return (i);
+}
+
+char    *ft_strdup(char *s1)
+{
+    char *ptr;
+    size_t len;
+
+    len = ft_strlen(s1);
+    ptr = (char *) malloc (sizeof (*s1) * (len + 1));
+    if (!ptr)
+        return (NULL);
+    else 
+        ft_strlcpy(ptr, s1, len + 1);
+    return (ptr);
+}
