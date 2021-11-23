@@ -9,102 +9,84 @@
 #include <stdlib.h>
 #include "get_next_line.h"
 
+typedef struct s_gnl_status
+{
+	char 	*buffer;
+	size_t	next_n_index;
+}	t_gnl_status;
+
+int	file_read(t_gnl_status *status,int fd, size_t buffer_size)
+{
+	ssize_t	rc;
+
+	status->next_n_index = 0;
+	status->buffer = (char *)malloc((size_t)buffer_size + 1);
+	if (status->buffer == NULL)
+		return (-1);
+	rc = read(fd, status->buffer, buffer_size);
+	if (rc <= 0)
+	{
+		free(status->buffer);
+		status->buffer = NULL;
+		if (rc == 0)
+			return (0);
+		return (-1);
+	}
+	status->buffer[rc] = '\0';
+	return (1);
+}
+
 char	*get_next_line_core(int fd, size_t buffer_size)
 {
-	static char 	*buffer;
-	static size_t	next_n_index;
-	ssize_t			rc;
-	char 			*ans;
-	char			*next_n_ptr;
-	char			*tmp;
+	static t_gnl_status status;
+	char 				*ans;
+	char				*tmp;
+	int  				ret;
 
-	rc = 1;
 	ans = NULL;
-	//
 	while (true)
 	{
-		//
-		if (buffer == NULL)
+		if (status.buffer == NULL)
 		{
-			next_n_index = 0;//変更点
-			buffer = (char *)malloc((size_t)buffer_size + 1);
-			//buffer = NULL;//
-			if (buffer == NULL)
-			{
-				free(buffer);
-				buffer = NULL;
-				free(ans);
-				ans = NULL;
-				return (NULL);
-			}
-			rc = read(fd, buffer, buffer_size);
-			if (rc < 0)
-			{
-				free(buffer);
-				buffer = NULL;
-				free(ans);
-				ans = NULL;
-				return (NULL);
-			}
-			if (rc == 0)
-			{
-				free(buffer);
-				buffer = NULL;
+			ret = file_read(&status,fd,buffer_size);
+			if (ret < 0)
 				break ;
-			}
-			buffer[rc] = '\0';
-			//next_n_index = 0;//当初
+			if (ret == 0)
+				return (ans);
 		}
 		if (ans == NULL)
-		{
 			ans = ft_strdup("");
-			//ans = NULL;
-			if (ans == NULL)
-			{
-				free(buffer);
-				buffer = NULL;
-				return(NULL);
-			}
-			//
-		}
-		
-		tmp = ft_strjoin(ans, &buffer[next_n_index]);
-		//tmp = NULL;
+		tmp = ft_strjoin(ans, &status.buffer[status.next_n_index]);
 		if (tmp == NULL)
-		{
-			free(buffer);
-			buffer = NULL;
-			free(ans);
-			ans = NULL;
-			return (NULL);
-		}
+			break ;
 		free(ans);
 		ans = tmp;
-		//
-		if (ft_strchr(&buffer[next_n_index], '\n'))
+		if (ft_strchr(&status.buffer[status.next_n_index], '\n'))
 		{
-			
-			next_n_ptr = ft_strchr(&buffer[next_n_index], '\n') + 1;//次のためにbufferを整理
-			next_n_index = next_n_ptr - buffer;
-			if (next_n_index == buffer_size)
+			status.next_n_index = ft_strchr(&status.buffer[status.next_n_index], '\n') + 1 - status.buffer;
+			if (status.next_n_index == buffer_size)
 			{
-				free(buffer);
-				buffer = NULL;
+				free(status.buffer);
+				status.buffer = NULL;
 			}
-			next_n_ptr = ft_strchr(ans, '\n') + 1;//今回のためにansを整理
-			*next_n_ptr = '\0';//今回のためにansを整理
-			break ;
+			tmp = ft_strchr(ans, '\n') + 1;//今回のためにansを整理
+			*tmp = '\0';//今回のためにansを整理
+			return (ans);
 		}
-		if (buffer[next_n_index] == '\0')//?
+		if (status.buffer[status.next_n_index] == '\0')
 		{
-			free(buffer);
+			free(status.buffer);
 			free(ans);
 			return (NULL);
 		}
-		free (buffer);
-		buffer = NULL;
+		free (status.buffer);
+		status.buffer = NULL;
 	}
-	return (ans);
+	free(status.buffer);
+	status.buffer = NULL;
+	free(ans);
+	ans = NULL;
+	return (NULL);
 }
 
 char	*get_next_line(int fd)
