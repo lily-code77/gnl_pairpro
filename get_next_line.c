@@ -27,7 +27,7 @@ char	*get_next_line_core(int fd, size_t buffer_size)
 		if (buffer == NULL)
 		{
 			next_n_index = 0;//変更点
-			buffer = (char *)calloc((size_t)buffer_size + 1,1);
+			buffer = (char *)malloc((size_t)buffer_size + 1);
 			if (buffer == NULL)
 				return (NULL);
 			rc = read(fd, buffer, buffer_size);
@@ -43,7 +43,7 @@ char	*get_next_line_core(int fd, size_t buffer_size)
 				buffer = NULL;
 				break ;
 			}
-			buffer[buffer_size] = '\0';
+			buffer[rc] = '\0';
 			//next_n_index = 0;//当初
 		}
 		if (ans == NULL)
@@ -74,9 +74,14 @@ char	*get_next_line_core(int fd, size_t buffer_size)
 		//
 		if (ft_strchr(&buffer[next_n_index], '\n'))
 		{
-			//
+			
 			next_n_ptr = ft_strchr(&buffer[next_n_index], '\n') + 1;//次のためにbufferを整理
 			next_n_index = next_n_ptr - buffer;
+			if (next_n_index == buffer_size)
+			{
+				free(buffer);
+				buffer = NULL;
+			}
 			next_n_ptr = ft_strchr(ans, '\n') + 1;//今回のためにansを整理
 			*next_n_ptr = '\0';//今回のためにansを整理
 			break ;

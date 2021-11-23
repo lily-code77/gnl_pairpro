@@ -5,7 +5,7 @@
 # include <stdlib.h>
 
 #ifndef BUFFER_SIZE//ワカモレで記載するかは不明
-# define BUFFER_SIZE 1000//
+# define BUFFER_SIZE 1//
 #endif
 
 char    *ft_strchr(char *s, int c);
