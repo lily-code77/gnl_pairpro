@@ -15,83 +15,88 @@ typedef struct s_gnl_status
 	size_t	next_n_index;
 }	t_gnl_status;
 
-int	file_read(t_gnl_status *status,int fd, size_t buffer_size)
+typedef struct s_gnl_status_non_static
+{
+	int fd;
+	char *ans;
+}	t_gnl_status_non_static;
+
+
+int	file_read(t_gnl_status *status, t_gnl_status_non_static *status_non_static)
 {
 	ssize_t	rc;
+	char	*tmp;
 
-	status->next_n_index = 0;
-	status->buffer = (char *)malloc((size_t)buffer_size + 1);
 	if (status->buffer == NULL)
-		return (-1);
-	rc = read(fd, status->buffer, buffer_size);
-	if (rc <= 0)
 	{
-		free(status->buffer);
-		status->buffer = NULL;
-		if (rc == 0)
-			return (0);
-		return (-1);
+		status->next_n_index = 0;
+		status->buffer = (char *)malloc((size_t)BUFFER_SIZE + 1);
+		if (status->buffer == NULL)
+			return (-1);
+		rc = read(status_non_static->fd, status->buffer, BUFFER_SIZE);
+		if (rc <= 0)
+		{
+			free(status->buffer);
+			status->buffer = NULL;
+			if (rc == 0)
+				return (0);
+			return (-1);
+		}
+		status->buffer[rc] = '\0';
 	}
-	status->buffer[rc] = '\0';
+	if (status_non_static->ans == NULL)
+		status_non_static->ans = ft_strdup("");
+	tmp = ft_strjoin(status_non_static->ans, &status->buffer[status->next_n_index]);
+	if (tmp == NULL)
+		return (-1) ;
+	free(status_non_static->ans); 
+	status_non_static->ans = tmp;
 	return (1);
-}
-
-char	*get_next_line_core(int fd, size_t buffer_size)
-{
-	static t_gnl_status status;
-	char 				*ans;
-	char				*tmp;
-	int  				ret;
-
-	ans = NULL;
-	while (true)
-	{
-		if (status.buffer == NULL)
-		{
-			ret = file_read(&status,fd,buffer_size);
-			if (ret < 0)
-				break ;
-			if (ret == 0)
-				return (ans);
-		}
-		if (ans == NULL)
-			ans = ft_strdup("");
-		tmp = ft_strjoin(ans, &status.buffer[status.next_n_index]);
-		if (tmp == NULL)
-			break ;
-		free(ans);
-		ans = tmp;
-		if (ft_strchr(&status.buffer[status.next_n_index], '\n'))
-		{
-			status.next_n_index = ft_strchr(&status.buffer[status.next_n_index], '\n') + 1 - status.buffer;
-			if (status.next_n_index == buffer_size)
-			{
-				free(status.buffer);
-				status.buffer = NULL;
-			}
-			tmp = ft_strchr(ans, '\n') + 1;//今回のためにansを整理
-			*tmp = '\0';//今回のためにansを整理
-			return (ans);
-		}
-		if (status.buffer[status.next_n_index] == '\0')
-		{
-			free(status.buffer);
-			free(ans);
-			return (NULL);
-		}
-		free (status.buffer);
-		status.buffer = NULL;
-	}
-	free(status.buffer);
-	status.buffer = NULL;
-	free(ans);
-	ans = NULL;
-	return (NULL);
 }
 
 char	*get_next_line(int fd)
 {
-	return (get_next_line_core(fd, BUFFER_SIZE));
+	static t_gnl_status status;
+	t_gnl_status_non_static status_non_static;
+		char				*tmp;
+	int  				ret;
+
+	status_non_static.fd = fd;
+	status_non_static.ans = NULL;
+	while (true)
+	{
+		ret = file_read(&status, &status_non_static);
+		if (ret < 0)
+			break ;
+		if (ret == 0)
+			return (status_non_static.ans);
+		if (ft_strchr(&status.buffer[status.next_n_index], '\n'))//89-64=25でギリ。64〜84行目の切り出し必須。
+		{
+			status.next_n_index = ft_strchr(&status.buffer[status.next_n_index], '\n') + 1 - status.buffer;//●次のlineのための整理　char *for_next_line(t_gnl_status *status, size_t buffer_size)
+			if (status.next_n_index == BUFFER_SIZE)//●次のlineのための整理
+			{
+				free(status.buffer);//●次のlineのための整理
+				status.buffer = NULL;//●次のlineのための整理
+			}
+			tmp = ft_strchr(status_non_static.ans, '\n') + 1;//■今回のためにansを整理　→ 79~83行目を今回のline作成の為の関数。char *get_the_line(t_gnl_status *status)
+			*tmp = '\0';//■今回のためにansを整理
+			return (status_non_static.ans);//■今回のためにansを整理
+		}
+		if (status.buffer[status.next_n_index] == '\0')//■今回のためにansを整理。改行がない、最後の行を作っている。 
+		{	
+			free(status.buffer);//■今回のためにansを整理。改行がない、最後の行を作っている。
+			free(status_non_static.ans);//■今回のためにansを整理。改行がない、最後の行を作っている。
+			return (NULL);//■今回のためにansを整理。改行がない、最後の行を作っている。
+		}
+		free (status.buffer);//★消したら無限ループ
+		status.buffer = NULL;
+	}
+	free(status.buffer);//★消したらbreakした後にリークが起こる。
+	status.buffer = NULL;
+	free(status_non_static.ans);
+	status_non_static.ans = NULL;
+	return (NULL);
 }
+
 
 
