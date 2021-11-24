@@ -17,7 +17,7 @@ typedef struct s_gnl_status
 
 typedef struct s_gnl_status_non_static
 {
-	int	fd;
+	int		fd;
 	char	*ans;
 }	t_gnl_status_non_static;
 
@@ -71,11 +71,10 @@ int	organizer(t_gnl_status *status, t_gnl_status_non_static *status_non_static)
 	return (1);
 }
 
-
 char	*get_next_line(int fd)
 {
-	static t_gnl_status 	status;
-	t_gnl_status_non_static status_non_static;
+	static t_gnl_status		status;
+	t_gnl_status_non_static	status_non_static;
 	char					*tmp;
 	int						ret;
 
@@ -93,7 +92,7 @@ char	*get_next_line(int fd)
 		tmp = ft_strjoin(status_non_static.ans, &status.buffer[status.next_n_index]);
 		if (tmp == NULL)
 			break ;
-		free(status_non_static.ans); 
+		free(status_non_static.ans);
 		status_non_static.ans = tmp;
 		ret = organizer(&status, &status_non_static);
 		if (ret == 0)
