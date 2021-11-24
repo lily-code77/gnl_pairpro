@@ -1,25 +1,4 @@
-#include<stdio.h>
-#include<assert.h>
-#include<string.h>
-#include <unistd.h>
-#include <stdbool.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdlib.h>
 #include "get_next_line.h"
-
-typedef struct s_gnl_status
-{
-	char	*buffer;
-	size_t	next_n_index;
-}	t_gnl_status;
-
-typedef struct s_gnl_status_non_static
-{
-	int		fd;
-	char	*ans;
-}	t_gnl_status_non_static;
 
 int	file_read(t_gnl_status *status, t_gnl_status_non_static *status_non_static)
 {
@@ -75,7 +54,7 @@ int	loop_handler(t_gnl_status *status, t_gnl_status_non_static *status_non_stati
 {
 	int		ret;
 	char	*tmp;
-	
+
 	ret = file_read(status, status_non_static);
 	if (ret < 0)
 		return (-1);

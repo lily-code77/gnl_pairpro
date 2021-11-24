@@ -3,10 +3,19 @@
 
 # include <unistd.h>
 # include <stdlib.h>
+#include <stdbool.h>
 
-#ifndef BUFFER_SIZE//ワカモレで記載するかは不明
-# define BUFFER_SIZE 1//
-#endif
+typedef struct s_gnl_status
+{
+	char	*buffer;
+	size_t	next_n_index;
+}	t_gnl_status;
+
+typedef struct s_gnl_status_non_static
+{
+	int		fd;
+	char	*ans;
+}	t_gnl_status_non_static;
 
 char    *ft_strchr(char *s, int c);
 char    *ft_strjoin(char *s1, char *s2);
