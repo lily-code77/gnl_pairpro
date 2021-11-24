@@ -22,7 +22,9 @@ char	*ft_strjoin(char *s1, char *s2);
 size_t	ft_strlen(char *str);
 char	*ft_strdup(char *s1);
 size_t	ft_strlcpy(char *dst, char *src, size_t dstsize);
-char	*get_next_line_core(int fd, size_t buffer_size);
+int		file_read(t_gnl_status *status, t_gnl_status_var *status_var);
+int		organizer(t_gnl_status *st, t_gnl_status_var *status_var);
+int		loop_handler(t_gnl_status *status, t_gnl_status_var *status_var);
 char	*get_next_line(int fd);
 
 #endif
