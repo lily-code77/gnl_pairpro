@@ -1,8 +1,8 @@
 #include<stdio.h>
 #include<assert.h>
 #include<string.h>
-# include <unistd.h>
-# include <stdbool.h>
+#include <unistd.h>
+#include <stdbool.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -11,16 +11,15 @@
 
 typedef struct s_gnl_status
 {
-	char 	*buffer;
+	char	*buffer;
 	size_t	next_n_index;
 }	t_gnl_status;
 
 typedef struct s_gnl_status_non_static
 {
-	int fd;
-	char *ans;
+	int	fd;
+	char	*ans;
 }	t_gnl_status_non_static;
-
 
 int	file_read(t_gnl_status *status, t_gnl_status_non_static *status_non_static)
 {
@@ -48,7 +47,7 @@ int	file_read(t_gnl_status *status, t_gnl_status_non_static *status_non_static)
 		status_non_static->ans = ft_strdup("");
 	tmp = ft_strjoin(status_non_static->ans, &status->buffer[status->next_n_index]);
 	if (tmp == NULL)
-		return (-1) ;
+		return (-1);
 	free(status_non_static->ans); 
 	status_non_static->ans = tmp;
 	return (1);
@@ -56,10 +55,10 @@ int	file_read(t_gnl_status *status, t_gnl_status_non_static *status_non_static)
 
 char	*get_next_line(int fd)
 {
-	static t_gnl_status status;
+	static t_gnl_status 	status;
 	t_gnl_status_non_static status_non_static;
-		char				*tmp;
-	int  				ret;
+	char					*tmp;
+	int						ret;
 
 	status_non_static.fd = fd;
 	status_non_static.ans = NULL;
@@ -97,6 +96,3 @@ char	*get_next_line(int fd)
 	status_non_static.ans = NULL;
 	return (NULL);
 }
-
-
-
