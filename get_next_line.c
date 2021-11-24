@@ -24,7 +24,6 @@ typedef struct s_gnl_status_non_static
 int	file_read(t_gnl_status *status, t_gnl_status_non_static *status_non_static)
 {
 	ssize_t	rc;
-	char	*tmp;
 
 	if (status->buffer == NULL)
 	{
@@ -43,13 +42,6 @@ int	file_read(t_gnl_status *status, t_gnl_status_non_static *status_non_static)
 		}
 		status->buffer[rc] = '\0';
 	}
-	if (status_non_static->ans == NULL)
-		status_non_static->ans = ft_strdup("");
-	tmp = ft_strjoin(status_non_static->ans, &status->buffer[status->next_n_index]);
-	if (tmp == NULL)
-		return (-1);
-	free(status_non_static->ans); 
-	status_non_static->ans = tmp;
 	return (1);
 }
 
@@ -69,6 +61,13 @@ char	*get_next_line(int fd)
 			break ;
 		if (ret == 0)
 			return (status_non_static.ans);
+		if (status_non_static.ans == NULL)
+		status_non_static.ans = ft_strdup("");
+		tmp = ft_strjoin(status_non_static.ans, &status.buffer[status.next_n_index]);
+		if (tmp == NULL)
+			break ;
+		free(status_non_static.ans); 
+		status_non_static.ans = tmp;
 		if (ft_strchr(&status.buffer[status.next_n_index], '\n'))//89-64=25でギリ。64〜84行目の切り出し必須。
 		{
 			status.next_n_index = ft_strchr(&status.buffer[status.next_n_index], '\n') + 1 - status.buffer;//●次のlineのための整理　char *for_next_line(t_gnl_status *status, size_t buffer_size)
