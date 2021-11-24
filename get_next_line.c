@@ -78,14 +78,14 @@ int	loop_handler(t_gnl_status *status, t_gnl_status_non_static *status_non_stati
 	
 	ret = file_read(status, status_non_static);
 	if (ret < 0)
-		return (-1) ;
+		return (-1);
 	if (ret == 0)
 		return (0);
 	if (status_non_static->ans == NULL)
 		status_non_static->ans = ft_strdup("");
 	tmp = ft_strjoin(status_non_static->ans, &status->buffer[status->next_n_index]);
 	if (tmp == NULL)
-		return (-1) ;
+		return (-1);
 	free(status_non_static->ans);
 	status_non_static->ans = tmp;
 	ret = organizer(status, status_non_static);
