@@ -71,34 +71,46 @@ int	organizer(t_gnl_status *status, t_gnl_status_non_static *status_non_static)
 	return (1);
 }
 
+int	loop_handler(t_gnl_status *status, t_gnl_status_non_static *status_non_static)
+{
+	int		ret;
+	char	*tmp;
+	
+	ret = file_read(status, status_non_static);
+	if (ret < 0)
+		return (-1) ;
+	if (ret == 0)
+		return (0);
+	if (status_non_static->ans == NULL)
+		status_non_static->ans = ft_strdup("");
+	tmp = ft_strjoin(status_non_static->ans, &status->buffer[status->next_n_index]);
+	if (tmp == NULL)
+		return (-1) ;
+	free(status_non_static->ans);
+	status_non_static->ans = tmp;
+	ret = organizer(status, status_non_static);
+	if (ret == 0)
+		return (0);
+	free (status->buffer);//★消したら無限ループ
+	status->buffer = NULL;
+	return (1);
+}
+
 char	*get_next_line(int fd)
 {
 	static t_gnl_status		status;
 	t_gnl_status_non_static	status_non_static;
-	char					*tmp;
 	int						ret;
 
 	status_non_static.fd = fd;
 	status_non_static.ans = NULL;
 	while (true)
 	{
-		ret = file_read(&status, &status_non_static);
+		ret = loop_handler(&status, &status_non_static);
 		if (ret < 0)
 			break ;
 		if (ret == 0)
 			return (status_non_static.ans);
-		if (status_non_static.ans == NULL)
-			status_non_static.ans = ft_strdup("");
-		tmp = ft_strjoin(status_non_static.ans, &status.buffer[status.next_n_index]);
-		if (tmp == NULL)
-			break ;
-		free(status_non_static.ans);
-		status_non_static.ans = tmp;
-		ret = organizer(&status, &status_non_static);
-		if (ret == 0)
-			return (status_non_static.ans);
-		free (status.buffer);//★消したら無限ループ
-		status.buffer = NULL;
 	}
 	free(status.buffer);//★消したらbreakした後にリークが起こる。
 	status.buffer = NULL;
