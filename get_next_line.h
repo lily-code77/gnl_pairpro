@@ -3,7 +3,7 @@
 
 # include <unistd.h>
 # include <stdlib.h>
-#include <stdbool.h>
+# include <stdbool.h>
 
 typedef struct s_gnl_status
 {
