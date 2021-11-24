@@ -24,25 +24,25 @@ int	file_read(t_gnl_status *status, t_gnl_status_var *status_var)
 	return (1);
 }
 
-int	organizer(t_gnl_status *status, t_gnl_status_var *status_var)
+int	organizer(t_gnl_status *st, t_gnl_status_var *status_var)
 {
 	char					*tmp;
 
-	if (ft_strchr(&status->buffer[status->next_n], '\n'))
+	if (ft_strchr(&st->buffer[st->next_n], '\n'))
 	{
-		status->next_n = ft_strchr(&status->buffer[status->next_n], '\n') + 1 - status->buffer;
-		if (status->next_n == BUFFER_SIZE)
+		st->next_n = ft_strchr(&st->buffer[st->next_n], '\n') + 1 - st->buffer;
+		if (st->next_n == BUFFER_SIZE)
 		{
-			free(status->buffer);
-			status->buffer = NULL;
+			free(st->buffer);
+			st->buffer = NULL;
 		}
 		tmp = ft_strchr(status_var->ans, '\n') + 1;
 		*tmp = '\0';
 		return (0);
 	}
-	if (status->buffer[status->next_n] == '\0') 
-	{	
-		free(status->buffer);
+	if (st->buffer[st->next_n] == '\0')
+	{
+		free(st->buffer);
 		free(status_var->ans);
 		status_var->ans = NULL;
 		return (0);
@@ -78,7 +78,7 @@ int	loop_handler(t_gnl_status *status, t_gnl_status_var *status_var)
 char	*get_next_line(int fd)
 {
 	static t_gnl_status		status;
-	t_gnl_status_var	status_var;
+	t_gnl_status_var		status_var;
 	int						ret;
 
 	status_var.fd = fd;
